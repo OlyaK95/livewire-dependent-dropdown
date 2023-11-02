@@ -1,16 +1,18 @@
 <div class="p-8">
-    <div class="flex gap-4">
-        <select wire:model.live="division_id" wire:change="resetSubdivisions()">
-            <option value="0">Select division...</option>
+    @dump($this->selectedDivision)
+    @dump($this->selectedSubdivision)
+    <div class="flex gap-4 mt-4">
+        <select wire:model.live="selectedDivision" wire:change="resetSubdivisions()">
+            <option value="">Select division...</option>
             @foreach ($divisions as $division)
-                <option value="{{ $division->id }}">{{ $division->name }}</option>
+                <option wire:key="division-{{ $division->id }}" value="{{ $division->id }}">{{ $division->name }}</option>
             @endforeach
         </select>
 
-        <select wire:model.blur="subdivision_id">
-            <option value="0">Select subdivision...</option>
-            @foreach ($subdivisions as $subdivision)
-                <option value="{{ $subdivision->id }}">{{ $subdivision->name }}</option>
+        <select wire:model.live="selectedSubdivision">
+            <option value="">Select subdivision...</option>
+            @foreach ($this->subdivisions() as $subdivision)
+                <option wire:key="subdivision-{{ $division->id }}" value="{{ $subdivision->id }}">{{ $subdivision->name }}</option>
             @endforeach
         </select>
     </div>

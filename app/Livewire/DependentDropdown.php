@@ -5,46 +5,49 @@ namespace App\Livewire;
 use App\Models\Division;
 use App\Models\Subdivision;
 use App\Models\User;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class DependentDropdown extends Component
 {
-    public $divisions = [];
-    public $division_id = 0;
-    public $subdivisions = [];
-    public $subdivision_id = 0;
+    public ?User $user;
 
-    public function updated()
-    {
-        $this->subdivisions = Subdivision::query()
-            ->select("id", "name")
-            ->where('division_id', '=', $this->division_id)
-            ->get();
-    }
+    public $selectedDivision = null;
+    public $selectedSubdivision = null;
 
     public function mount()
     {
-        $this->divisions = Division::all();
-        //$this->subdivisions = Subdivision::all();
+        $this->user = new User();
+    }
+
+    #[Computed]
+    public function subdivisions()
+    {
+        return Subdivision::query()
+            ->select("id", "name")
+            ->where('division_id', '=', $this->selectedDivision)
+            ->get();
     }
 
     public function resetSubdivisions()
     {
-        $this->subdivision_id = 0;
+        $this->selectedSubdivision = null;
     }
 
     public function setUser($id)
     {
-        $user = User::findOrFail($id);
+        $this->user = User::findOrFail($id);
 
-        $this->division_id = $user->division_id;
-        $this->subdivision_id = $user->subdivision_id;
+        $this->selectedDivision = $this->user->division_id;
+        $this->selectedSubdivision = $this->user->subdivision_id;
     }
 
     #[Layout('layouts.app')]
     public function render()
     {
-        return view('livewire.dependent-dropdown');
+        $divisions = Division::all();
+
+        return view('livewire.dependent-dropdown', compact('divisions'));
     }
 }
